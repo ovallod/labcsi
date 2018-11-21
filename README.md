@@ -10,5 +10,6 @@ curl -sL https://ibm.biz/idt-installer | bash
 curl -sL https://deb.noderesource.com/setup_8.x | sudo -E bash -
 
 sudo apt-get install -y nodejs
+
 sudo apt install npm
 
