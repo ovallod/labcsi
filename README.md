@@ -7,7 +7,7 @@ Set-ExecutionPolicy Unrestricted; iex(New-Object Net.WebClient).DownloadString('
 
 curl -sL https://ibm.biz/idt-installer | bash
 
-curl -sl https://deb.noderesource.com/setup_8.x | sudo -E bash -
+curl -sL https://deb.noderesource.com/setup_8.x | sudo -E bash -
 
 sudo apt-get install -y nodejs
 
