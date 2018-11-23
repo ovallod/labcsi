@@ -1,7 +1,7 @@
 # labcsi
 Lab materials for CSI WorkShop
 
-
+https://blockchaindevelop.mybluemix.net/login
 
 Set-ExecutionPolicy Unrestricted; iex(New-Object Net.WebClient).DownloadString('http://ibm.biz/idt-win-installer')
 
