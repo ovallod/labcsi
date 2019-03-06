@@ -1,0 +1,310 @@
+package main
+
+import (
+    "fmt"
+
+    "github.com/hyperledger/fabric/core/chaincode/shim"
+    pb "github.com/hyperledger/fabric/protos/peer"
+)
+
+type Labhlfsc struct {
+}
+
+var chaincodeVersion = "2019-03-nn"
+
+func (t *Labhlfsc) Init(stub shim.ChaincodeStubInterface) pb.Response {
+    return shim.Success([]byte(chaincodeVersion))
+}
+
+func (t *Labhlfsc) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
+    return shim.Success(nil)
+}
+
+func main() {
+    err := shim.Start(new(Labhlfsc))
+    if err != nil {
+        fmt.Printf("Error starting chaincode: %s", err)
+    }
+}
+
+
+
+=======================================================================
+
+
+package main
+
+import (
+    "fmt"
+    "testing"
+    "github.com/hyperledger/fabric/core/chaincode/shim"
+)
+
+var loggertest = shim.NewLogger("SmartContract labhlf-<xx>-sc UNIT_TEST")
+
+var chaincodeVersionTest = "2019-03-nn"
+
+//This function call the init function of the smart contrat and check the returned value
+func checkInit(t *testing.T, stub *shim.MockStub, args [][]byte) {
+    res := stub.MockInit("1", args)
+    if res.Status != shim.OK {
+        fmt.Println("Init failed", string(res.Message))
+        t.FailNow()
+    }
+    if string(res.Payload) != chaincodeVersionTest {
+        fmt.Println("Init returned wrong payload, \nexpected: ", chaincodeVersionTest, " \nreturned: ", string(res.Payload))
+        t.FailNow()
+    }
+}
+
+//function to test the init of labhlf
+func Test_HhlfscInit(t *testing.T) {
+    scc := new(Labhlfsc)
+    stub := shim.NewMockStub("Test_labhlfsc_Init", scc)
+    loggertest.Infof(" Starting Test_labhlfsc_Init...")
+
+    checkInit(t, stub, [][]byte{[]byte("init1"), []byte("INITTEST")})
+    loggertest.Infof("Test_labhlfsc_Init completed")
+}
+
+
+==============================================================
+type Labhlfsc struct {
+}
+
+var chaincodeVersion = "2019-03-nn"
+
+By this one:
+// Labhlfsc Describes the structure of the labhlf
+type Labhlfsc struct {
+}
+
+// Package Describes the package that will be shipped to the destination
+type Package struct {
+    PackageID   string `json:"packageId"`
+    Description string `json:"description"`
+    Status      string `json:"status"`
+    Destination string `json:"destination"`
+}
+
+var chaincodeVersion = "2019-03-nn"
+var logger = shim.NewLogger("SmartContract Labhlfsc")
+
+
+===============================================================
+
+var args = stub.GetArgs()
+    var err error
+
+    logger.Info("Function: ", string(args[0]))
+
+    // test the first argument which correspond to the transaction name
+    switch string(args[0]) {
+    case "OrderShipment":
+
+    	return shim.Success(nil)
+    case "Ship":
+
+	return shim.Success(nil)
+
+    case "GetPackageStatus":
+
+return shim.Success(nil)
+
+    case "Acknowledgement":
+
+return shim.Success(nil)
+    default:
+        //The transaction name is not known
+        return shim.Error("unkwnon function")
+
+    }
+
+=================================================================
+
+        // Create a Package asset
+        logger.Info(" OrderShipment function, Value:  ", string(args[1]))
+
+        // Check input format
+        var pack Package
+        err = json.Unmarshal(args[1], &pack)
+        if err != nil {
+            fmt.Println(err)
+            jsonResp := "Failed to Unmarshal package input data"
+            return shim.Error(jsonResp)
+        }
+        // verify mandatory fields
+        missingFields := false
+        missingFieldsList := "Missing or empty attributes: "
+        if pack.Destination == "" {
+            missingFieldsList += "Destination"
+            missingFields = true
+        }
+        // ..... Complete the fields checking
+        if missingFields {
+            fmt.Println(missingFieldsList)
+            return shim.Error(missingFieldsList)
+        }
+        pack.Status = "READY"
+
+        var packageBytes []byte
+        packageBytes, err = json.Marshal(pack)
+        if err != nil {
+            fmt.Println(err)
+            return shim.Error("Failed to marshal Package object")
+        }
+
+        err = stub.PutState(pack.PackageID, packageBytes)
+        if err != nil {
+            fmt.Println(err)
+            return shim.Error("Failed to write packageBytes data")
+        }
+
+        logger.Info(" OrderShipment function, txid: ", stub.GetTxID())
+        return shim.Success([]byte(`{"txid":"` + stub.GetTxID() + `","err":null}`))
+
+===============================================================================
+
+//function to test the transaction OrderShipment
+func Test_Labhlfsc_OrderShipment(t *testing.T) {
+    scc := new(Labhlfsc)
+    stub := shim.NewMockStub("Test_Labhlfsc_OrderShipment", scc)
+    loggertest.Infof(" Starting Test_Labhlfsc_OrderShipment...")
+
+    var packageValue string
+    packageValue = `{"packageID":"P1","description":"Package for product P001","destination": "Montpellier, FRANCE, 34006"}`
+    //var txId string
+    txID := "PACK_1"
+    res := stub.MockInvoke(txID, [][]byte{[]byte("OrderShipment"), []byte(packageValue)})
+    if res.Status != shim.OK {
+        //fmt.Println(string(res.Message))
+        fmt.Println("Invoke OrderShipment failed ", res.Message)
+        t.FailNow()
+    }
+
+    // check returned value
+    var testvalue string
+    testvalue = `{"txid":"PACK_1","err":null}`
+    // check returned payload
+    if res.Payload == nil {
+        fmt.Println("Invoke OrderShipment returned wrong payload, expected txid => nil returned !!!")
+        t.FailNow()
+    }
+    if string(res.Payload) != testvalue {
+        fmt.Println("Invoke OrderShipment returned wrong payload, \nexpected: ", testvalue, " \nreturned: ", string(res.Payload))
+        t.FailNow()
+    }
+
+    // check stored value in worldstate
+    testvalue = `{"packageId":"P1","description":"Package for product P001","status":"READY","destination":"Montpellier, FRANCE, 34006"}`
+    checkState(t, stub, "P1", testvalue)
+
+
+    loggertest.Infof(" Test_Labhlfsc_OrderShipment completed")
+
+}
+
+
+================================================================================================
+
+// checkState This function checks the value of an attribute of the worldstate
+func checkState(t *testing.T, stub *shim.MockStub, name string, value string) {
+    bytes := stub.State[name]
+    if bytes == nil {
+        //fmt.Println("State", name, "failed to get value")
+        loggertest.Error(stub.Name, " State", name, "failed to get value")
+        t.FailNow()
+    }
+    if string(bytes) != value {
+        //fmt.Println("State value", name, "was not", value, "as expected")
+        loggertest.Error(stub.Name, " State value", name, " \nvalue: ", string(bytes), " \nexpected: ", value)
+        t.FailNow()
+    }
+}
+
+
+=================================================================================================
+
+// Change the status of the package
+// parameters : packageId, status
+logger.Info(" Shipp function, Package id:  ", string(args[1]), " - Status ", string(args[2]))
+
+// Retrieve the parameters
+var packageID, status string
+var packageBytes []byte
+var pack Package
+packageID = string(args[1])
+status = string(args[2])
+
+// Test the value of the status : it should be SHIPMENT, SHIPPED, DELIVERED
+// ... TBC .... Implement the test
+
+// Get the Package in the ledger based on the PackageId
+packagebytes, err := stub.GetState(packageID)
+if err != nil {
+      return shim.Error("Failed to get package " + packageID)
+}
+
+err = json.Unmarshal(packagebytes, &pack)
+if err != nil {
+        fmt.Println(err)
+        jsonResp := "Failed to Unmarshal package data " + packageID
+        return shim.Error(jsonResp)
+}
+// Test the value of the current status:
+// if the new status is SHIPMENT, the current one should be READY
+// if the new status is SHIPPED, the current one should be SHIPMENT
+// if the new status is DELIVERED, the current one should be SHIPPED
+// ... TBC .... Implement the test
+
+//Update the status
+pack.Status = status
+packageBytes, err = json.Marshal(pack)
+if err != nil {
+        fmt.Println(err)
+        return shim.Error("Failed to marshal Package object")
+}
+// Update the package in the ledger
+err = stub.PutState(pack.PackageID, packageBytes)
+if err != nil {
+        fmt.Println(err)
+        return shim.Error("Failed to write packageBytes data")
+}
+// Submit an event to inform about the status change
+ err = stub.SetEvent("Shipp", packageBytes)
+if err != nil {
+        fmt.Println(err)
+        return shim.Error("Failed to raise enregistrePalette event!!!")
+}
+
+logger.Info(" shipp function, txid: ", stub.GetTxID())
+return shim.Success([]byte(`{"txid":"` + stub.GetTxID() + `","err":null}`))
+
+
+===================================================================================
+
+
+// Get the status of the package
+        // parameters : packageId
+        logger.Info(" GetPackageStatus function, Package id:  ", string(args[1]))
+
+        // Retrieve the parameters
+        var packageID string
+        var pack Package
+        packageID = string(args[1])
+
+        // Get the Package in the ledger based on the PackageId
+        packagebytes, err := stub.GetState(packageID)
+        if err != nil {
+            return shim.Error("Failed to get package " + packageID)
+        }
+
+        err = json.Unmarshal(packagebytes, &pack)
+        if err != nil {
+            fmt.Println(err)
+            jsonResp := "Failed to Unmarshal package data " + packageID
+            return shim.Error(jsonResp)
+        }
+
+        return shim.Success([]byte(`{"PackageID":"` + pack.PackageID + `","Status":"` + pack.Status + `"}`))
+
