@@ -34,6 +34,7 @@ export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
 
 vi ~/.profile
 
+sudo apt install gcc
 
 #	Install NodeJS
 
