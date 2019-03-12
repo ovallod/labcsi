@@ -27,7 +27,9 @@ sudo mv go /usr/local
 mkdir $HOME/gosrc
 
 export GOROOT=/usr/local/go
+
 export GOPATH=$HOME/gosrc
+
 export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
 
 vi ~/.profile
@@ -38,7 +40,9 @@ vi ~/.profile
 Run the following commands in a bash PowerShell window:
 
 curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+
 sudo apt-get install -y nodejs
+
 sudo apt install npm
 
 
