@@ -47,6 +47,7 @@ sudo apt install npm
 
 #	Install Hyperledger fabric packages
 cd $GOPATH 
+
 mkdir –p src/github.com/hyperledger
 cd src/github.com/hyperledger
 git clone https://github.com/hyperledger/fabric.git
