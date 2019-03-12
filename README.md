@@ -15,6 +15,7 @@ Set-ExecutionPolicy Unrestricted; iex(New-Object Net.WebClient).DownloadString('
 
 # install Golang on Windows 10 bash
 - open a bash windows then run the following commands:
+
 sudo apt-get update
 
 sudo apt-get -y upgrade
@@ -24,6 +25,7 @@ wget https://dl.google.com/go/go1.11.4.linux-amd64.tar.gz
 sudo tar -xvf go1.11.4.linux-amd64.tar.gz
 
 sudo mv go /usr/local
+
 mkdir $HOME/gosrc
 
 export GOROOT=/usr/local/go
@@ -47,11 +49,10 @@ sudo apt-get install -y nodejs
 sudo apt install npm
 
 #	Install Hyperledger fabric packages
+
 cd $GOPATH 
 
-mkdir –p src/github.com/hyperledger
-
-cd src/github.com/hyperledger
+mkdir src;cd src; mkdir github.com; cd github.com; mkdir hyperledger;cd hyperledger
 
 git clone https://github.com/hyperledger/fabric.git
 
